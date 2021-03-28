@@ -10,10 +10,10 @@ public class Panel extends JPanel implements Runnable , KeyListener {
     static final int GAME_WIDTH = 900 , GAME_HEIGHT = (int)( GAME_WIDTH * 5 / 9 );
     static final Dimension screen_size = new Dimension( GAME_WIDTH , GAME_HEIGHT);
 
-    //private static final int BallSize = 20;
-    //private Ball ball ;
+    static final int BallSize = 20;
+    Ball ball ;
 
-    static final int PLAYER_WIDTH  = 10 , PLAYER_HEIGHT = 70;
+    static final int PLAYER_WIDTH  = 20 , PLAYER_HEIGHT = 100;
     Player P1 ;
     Player P2 ;
 
@@ -25,7 +25,7 @@ public class Panel extends JPanel implements Runnable , KeyListener {
     Panel() {
         P1 = new Player(0 , (GAME_HEIGHT/2) - (PLAYER_HEIGHT) , PLAYER_WIDTH , PLAYER_HEIGHT , 1 , Color.RED);
         P2 = new Player(GAME_WIDTH-PLAYER_WIDTH , (GAME_HEIGHT/2) - (PLAYER_HEIGHT) , PLAYER_WIDTH , PLAYER_HEIGHT , 2 , Color.BLUE);
-        //ball = new Ball( 20 , 20 );
+        ball = new Ball( (GAME_WIDTH/2) - (BallSize/2) , (GAME_HEIGHT/2) - (BallSize/2) , BallSize );
         setFocusable(true);
         addKeyListener(this);
         setPreferredSize( screen_size );
@@ -44,20 +44,38 @@ public class Panel extends JPanel implements Runnable , KeyListener {
     public void draw( Graphics g ) {
         P1.draw(g);
         P2.draw(g);
+        ball.draw(g);
     }
 
     public void update() {
         P1.update();
         P2.update();
+        ball.update();
     }
 
     public void checkCollision() {
         if ( P1.y <= 0 ) P1.y = 0;
-        if( P1.y >= GAME_HEIGHT - P1.height) P1.y = GAME_HEIGHT - P1.height;
+        else if( P1.y >= GAME_HEIGHT - P1.height) P1.y = GAME_HEIGHT - P1.height;
 
         if ( P2.y <= 0 ) P2.y = 0;
-        if( P2.y >= GAME_HEIGHT - P2.height) P2.y = GAME_HEIGHT - P2.height;
+        else if( P2.y >= GAME_HEIGHT - P2.height) P2.y = GAME_HEIGHT - P2.height;
 
+        if( ball.y <= 0 || ball.y >= GAME_HEIGHT - ball.height) ball.setYDirection( -ball.ySpeed );
+        if( ball.x <= 0 || ball.x >= GAME_WIDTH - ball.width) ball.setXDirection( -ball.xSpeed );
+
+        if( ball.intersects(P1) ) {
+            ball.xSpeed = Math.abs( ball.xSpeed );
+            ball.xSpeed++;
+            if( ball.ySpeed > 0) ball.ySpeed++; else ball.ySpeed--;
+            ball.setXDirection(ball.xSpeed); ball.setYDirection(ball.ySpeed);
+        }
+
+        if( ball.intersects(P2) ) {
+            ball.xSpeed = Math.abs( ball.xSpeed );
+            ball.xSpeed++;
+            if( ball.ySpeed > 0) ball.ySpeed++; else ball.ySpeed--;
+            ball.setXDirection(-ball.xSpeed); ball.setYDirection(ball.ySpeed);
+        }
     }
 
     @Override
