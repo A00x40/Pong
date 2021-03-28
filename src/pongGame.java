@@ -7,35 +7,26 @@ public class pongGame extends JFrame {
      *
      */
     private static final long serialVersionUID = 1L;
-    
-    private static final int gameWidth = 500 , gameHeight = (int)(gameWidth * 5 / 9) ;
-    Dimension screen_size = new Dimension ( gameWidth , gameHeight );
 
     private Panel P;
 
     public pongGame() {
-        this.setTitle( "Pong" );
+        P = new Panel();
+        add(P);
 
-        this.setSize(screen_size);
-        this.setResizable(false);
+        setTitle( "Pong" );
 
-        this.setDefaultCloseOperation( JFrame.EXIT_ON_CLOSE );
-        this.setVisible(true);
+        setResizable(false);
+        setBackground(Color.BLACK);
 
-        this.P = new Panel( this );
-        this.add( P );
-    }
+        pack();
+        setLocationRelativeTo(null);
 
-    public Panel getPanel() { return this.P; }
-
-    public void run() {
-        while( true ) {
-
-        }
+        setDefaultCloseOperation( JFrame.EXIT_ON_CLOSE );
+        setVisible(true);
     }
 
     public static void main( String[] args ) {
-        pongGame Game =  new pongGame(); 
-        Game.run();
+        new pongGame(); 
     }  
 }
