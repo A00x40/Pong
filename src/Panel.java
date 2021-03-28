@@ -2,7 +2,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 
-public class Panel extends JPanel implements Runnable{
+public class Panel extends JPanel implements Runnable , KeyListener {
     /**
      *
      */
@@ -27,7 +27,7 @@ public class Panel extends JPanel implements Runnable{
         P2 = new Player(GAME_WIDTH-PLAYER_WIDTH , (GAME_HEIGHT/2) - (PLAYER_HEIGHT) , PLAYER_WIDTH , PLAYER_HEIGHT , 2 , Color.BLUE);
         //ball = new Ball( 20 , 20 );
         setFocusable(true);
-        addKeyListener( new AL() );
+        addKeyListener(this);
         setPreferredSize( screen_size );
 
         gameThread = new Thread(this);
@@ -46,13 +46,18 @@ public class Panel extends JPanel implements Runnable{
         P2.draw(g);
     }
 
-
     public void update() {
-        
+        P1.update();
+        P2.update();
     }
 
     public void checkCollision() {
-        
+        if ( P1.y <= 0 ) P1.y = 0;
+        if( P1.y >= GAME_HEIGHT - P1.height) P1.y = GAME_HEIGHT - P1.height;
+
+        if ( P2.y <= 0 ) P2.y = 0;
+        if( P2.y >= GAME_HEIGHT - P2.height) P2.y = GAME_HEIGHT - P2.height;
+
     }
 
     @Override
@@ -73,12 +78,19 @@ public class Panel extends JPanel implements Runnable{
             }
         }
     }
-    public class AL extends KeyAdapter {
-        public void KeyPressed() {
-            
-        }
-        public void KeyReleased() {
-            
-        }
+
+    @Override
+    public void keyPressed( KeyEvent e ) {
+        P1.KeyPressed(e);
+        P2.KeyPressed(e);
     }
+
+    @Override
+    public void keyReleased( KeyEvent e ) {
+        P1.KeyReleased(e);
+        P2.KeyReleased(e);
+    }
+
+    @Override
+    public void keyTyped(KeyEvent e) { ; }
 }
