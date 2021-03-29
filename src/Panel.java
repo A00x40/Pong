@@ -9,6 +9,7 @@ public class Panel extends JPanel implements Runnable , KeyListener {
     private static final long serialVersionUID = 1L;
     static final int GAME_WIDTH = 900 , GAME_HEIGHT = (int)( GAME_WIDTH * 5 / 9 );
     static final Dimension screen_size = new Dimension( GAME_WIDTH , GAME_HEIGHT);
+    final int maxScore = 10;
 
     static final int BallSize = 20;
     Ball ball ;
@@ -17,15 +18,20 @@ public class Panel extends JPanel implements Runnable , KeyListener {
     Player P1 ;
     Player P2 ;
 
+    Score score;
+
     Thread gameThread;
 
     Image image;
     Graphics graphics;
 
-    Panel() {
+    pongGame Game ;
+    Panel(pongGame Game) {
+        this.Game = Game;
         P1 = new Player(0 , (GAME_HEIGHT/2) - (PLAYER_HEIGHT) , PLAYER_WIDTH , PLAYER_HEIGHT , 1 , Color.RED);
         P2 = new Player(GAME_WIDTH-PLAYER_WIDTH , (GAME_HEIGHT/2) - (PLAYER_HEIGHT) , PLAYER_WIDTH , PLAYER_HEIGHT , 2 , Color.BLUE);
         ball = new Ball( (GAME_WIDTH/2) - (BallSize/2) , (GAME_HEIGHT/2) - (BallSize/2) , BallSize );
+        score = new Score( GAME_WIDTH/2 , 20 );
         setFocusable(true);
         addKeyListener(this);
         setPreferredSize( screen_size );
@@ -45,6 +51,7 @@ public class Panel extends JPanel implements Runnable , KeyListener {
         P1.draw(g);
         P2.draw(g);
         ball.draw(g);
+        score.draw(g);
     }
 
     public void update() {
@@ -60,8 +67,16 @@ public class Panel extends JPanel implements Runnable , KeyListener {
         if ( P2.y <= 0 ) P2.y = 0;
         else if( P2.y >= GAME_HEIGHT - P2.height) P2.y = GAME_HEIGHT - P2.height;
 
-        if( ball.y <= 0 || ball.y >= GAME_HEIGHT - ball.height) ball.setYDirection( -ball.ySpeed );
-        if( ball.x <= 0 || ball.x >= GAME_WIDTH - ball.width) ball.setXDirection( -ball.xSpeed );
+        if( ball.y <= 0 || ball.y >= GAME_HEIGHT - ball.height) {
+            ball.setYDirection( -ball.ySpeed );
+            
+        }
+        if( ball.x <= 0 || ball.x >= GAME_WIDTH - ball.width) {
+            ball.setXDirection( -ball.xSpeed );
+
+            if( ball.x <= 0 ) score.update( P2.id );
+            else score.update( P1.id );
+        }
 
         if( ball.intersects(P1) ) {
             ball.xSpeed = Math.abs( ball.xSpeed );
@@ -91,11 +106,16 @@ public class Panel extends JPanel implements Runnable , KeyListener {
 			if(delta >=1) {
 				update();
 				checkCollision();
+
+                if( score.score1 == maxScore ) this.Game.Finish(1);
+                else if( score.score2 == maxScore ) this.Game.Finish(2);
+
 				repaint();
 				delta--;
             }
         }
     }
+
 
     @Override
     public void keyPressed( KeyEvent e ) {
